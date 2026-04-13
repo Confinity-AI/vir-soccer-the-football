@@ -1,28 +1,35 @@
 /**
- * Downloads the real v0 chat project as a ZIP via the Platform API, then extracts it.
+ * Downloads the real v0 chat project as a ZIP via the Platform API, extracts it,
+ * and optionally replaces the contents of sites/vir_soccer (keeps .git + import scripts).
  *
- * Prerequisite: create a v0 API key at https://v0.dev/chat/settings/keys
- * and either:
- *   - set env:  $env:V0_API_KEY = "v0_..."   (PowerShell)
- *   - or create .env.local in this project root with:
- *       V0_API_KEY=v0_...
+ * Prerequisite: API key from https://v0.dev/chat/settings/keys
+ * Set V0_API_KEY in the environment or in .env.local (see backup-v0.env.example).
  *
- * Usage (from project root):
+ * Usage:
  *   node scripts/download-v0-backup.mjs
+ *   node scripts/download-v0-backup.mjs --apply
+ *
+ * For a ZIP you downloaded manually from v0 (no API key), use:
+ *   node scripts/apply-v0-zip.mjs "C:\path\to\export.zip"
  */
 
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  applyExtractedToVirSoccer,
+  expandZip,
+  runNpmInstall,
+} from "./v0-project-tools.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
 
-/** Override if your API uses an internal chat id (see GET response `id`). */
 const CHAT_ID =
   process.env.V0_CHAT_ID || "vir-soccer-academy-website-qVQFD5VOV6D";
 const API = "https://api.v0.dev/v1";
+const APPLY = process.argv.includes("--apply");
 
 function loadDotEnvLocal() {
   const p = path.join(ROOT, ".env.local");
@@ -55,12 +62,16 @@ if (!apiKey) {
 Missing V0_API_KEY.
 
 1. Open https://v0.dev/chat/settings/keys and create an API key.
-2. In PowerShell (this session only):
+2. PowerShell:
      $env:V0_API_KEY = "v0_..."
-   Or create ${path.join(ROOT, ".env.local")} with:
-     V0_API_KEY=v0_...
-3. Run again:
+   Or create ${path.join(ROOT, ".env.local")} — see backup-v0.env.example
+
+3. Run:
      node scripts/download-v0-backup.mjs
+     node scripts/download-v0-backup.mjs --apply
+
+No API key? In v0.app use Download ZIP, then:
+     node scripts/apply-v0-zip.mjs "C:\\path\\to\\that.zip"
 `);
   process.exit(1);
 }
@@ -87,11 +98,15 @@ async function main() {
     process.exit(1);
   }
   if (status && status !== "completed") {
-    console.warn(`Warning: latestVersion status is "${status}" (expected completed).`);
+    console.warn(
+      `Warning: latestVersion status is "${status}" (expected completed).`,
+    );
   }
 
   const downloadUrl = `${API}/chats/${encodeURIComponent(chatId)}/versions/${encodeURIComponent(versionId)}/download?format=zip&includeDefaultFiles=true`;
-  const zipRes = await fetch(downloadUrl, { headers: { Authorization: `Bearer ${apiKey}` } });
+  const zipRes = await fetch(downloadUrl, {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
   if (!zipRes.ok) {
     const t = await zipRes.text();
     console.error(`Download failed ${zipRes.status}:`, t);
@@ -128,6 +143,15 @@ async function main() {
   console.log("\nBackup written:");
   console.log("  ZIP:       ", zipPath);
   console.log("  Extracted: ", extractDir);
+
+  if (APPLY) {
+    console.log("\nApplying v0 export into vir_soccer (replacing placeholder)...");
+    applyExtractedToVirSoccer(extractDir, ROOT);
+    console.log("Running npm install...");
+    runNpmInstall(ROOT);
+    console.log("\nApply complete. Run: npm run dev");
+    console.log("Then commit and push to update GitHub.");
+  }
 }
 
 main().catch((e) => {

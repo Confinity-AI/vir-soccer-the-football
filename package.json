@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "backup:v0": "node scripts/download-v0-backup.mjs"
+    "backup:v0": "node scripts/download-v0-backup.mjs",
+    "backup:v0:apply": "node scripts/download-v0-backup.mjs --apply",
+    "import:v0-zip": "node scripts/apply-v0-zip.mjs"
   },
   "dependencies": {
     "next": "16.2.3",

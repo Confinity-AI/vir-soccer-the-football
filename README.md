@@ -4,6 +4,8 @@ Next.js site for **VIR Soccer Academy**, living under `AmalgamSites/sites/vir_so
 
 **GitHub:** [Confinity-AI/vir-soccer-the-football](https://github.com/Confinity-AI/vir-soccer-the-football)
 
+If the repo still looks like the old placeholder and not your **v0** preview, import the real v0 export and push again — see [GITHUB-AND-V0.md](./GITHUB-AND-V0.md) and [BACKUP.md](./BACKUP.md).
+
 ## Scripts
 
 ```bash
