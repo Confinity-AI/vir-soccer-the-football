@@ -2,6 +2,8 @@
 
 Next.js site for **VIR Soccer Academy**, living under `AmalgamSites/sites/vir_soccer`.
 
+**GitHub:** [Confinity-AI/vir-soccer-the-football](https://github.com/Confinity-AI/vir-soccer-the-football)
+
 ## Scripts
 
 ```bash
