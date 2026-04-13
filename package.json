@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "backup:v0": "node scripts/download-v0-backup.mjs"
   },
   "dependencies": {
     "next": "16.2.3",
