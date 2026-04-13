@@ -1,26 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --vir-pitch: #f4f7f4;
+  --vir-ink: #0a1f14;
+  --vir-green: #0d4d2b;
+  --vir-green-light: #1a6b3e;
+  --vir-gold: #c9a227;
+  --vir-muted: #5c6b62;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Subtle pitch texture */
+.bg-pitch-pattern {
+  background-image: radial-gradient(
+      circle at 20% 30%,
+      rgba(13, 77, 43, 0.06) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(201, 162, 39, 0.08) 0%,
+      transparent 40%
+    );
 }
