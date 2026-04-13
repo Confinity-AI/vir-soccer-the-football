@@ -54,6 +54,22 @@ function loadDotEnvLocal() {
   }
 }
 
+/** Optional: one line `v0_...` in Desktop\v0-api-key.txt (delete after use). */
+function loadDesktopKeyFile() {
+  const p = path.join(
+    process.env.USERPROFILE || "",
+    "Desktop",
+    "v0-api-key.txt",
+  );
+  if (!fs.existsSync(p)) return;
+  const raw = fs.readFileSync(p, "utf8").trim();
+  const line = raw.split(/\r?\n/)[0]?.trim() ?? "";
+  if (line.startsWith("v0_") && !process.env.V0_API_KEY) {
+    process.env.V0_API_KEY = line;
+  }
+}
+
+loadDesktopKeyFile();
 loadDotEnvLocal();
 
 const apiKey = process.env.V0_API_KEY;
@@ -62,9 +78,10 @@ if (!apiKey) {
 Missing V0_API_KEY.
 
 1. Open https://v0.dev/chat/settings/keys and create an API key.
-2. PowerShell:
-     $env:V0_API_KEY = "v0_..."
-   Or create ${path.join(ROOT, ".env.local")} — see backup-v0.env.example
+2. Easiest: create a file on your Desktop named **v0-api-key.txt** with a single line (your key from https://v0.dev/chat/settings/keys ), then run this script again. Delete that file after.
+
+   Or PowerShell: $env:V0_API_KEY = "v0_..."
+   Or ${path.join(ROOT, ".env.local")} — see backup-v0.env.example
 
 3. Run:
      node scripts/download-v0-backup.mjs
@@ -114,6 +131,13 @@ async function main() {
   }
 
   const buf = Buffer.from(await zipRes.arrayBuffer());
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const zipName = `vir-soccer-v0-export-${stamp}.zip`;
+
+  const desktopDir = path.join(process.env.USERPROFILE || "", "Desktop");
+  const desktopZip = path.join(desktopDir, zipName);
+  fs.writeFileSync(desktopZip, buf);
+
   const backupRoot = path.join(
     process.env.USERPROFILE,
     "Desktop",
@@ -122,8 +146,6 @@ async function main() {
     "v0-vir-soccer-real",
   );
   fs.mkdirSync(backupRoot, { recursive: true });
-  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const zipName = `vir-soccer-academy-${stamp}.zip`;
   const zipPath = path.join(backupRoot, zipName);
   fs.writeFileSync(zipPath, buf);
 
@@ -141,7 +163,8 @@ async function main() {
   );
 
   console.log("\nBackup written:");
-  console.log("  ZIP:       ", zipPath);
+  console.log("  Desktop:   ", desktopZip);
+  console.log("  Copy also: ", zipPath);
   console.log("  Extracted: ", extractDir);
 
   if (APPLY) {

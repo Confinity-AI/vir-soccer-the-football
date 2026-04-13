@@ -47,7 +47,8 @@ node scripts/apply-v0-zip.mjs "C:\Users\ryana\Downloads\your-export.zip"
 
 Same as path **A**, but run `npm run backup:v0` instead of `backup:v0:apply`. Outputs:
 
-- **ZIP:** `Desktop\AmalgamSites\backups\v0-vir-soccer-real\vir-soccer-academy-<timestamp>.zip`
+- **ZIP (Desktop):** `Desktop\vir-soccer-v0-export-<timestamp>.zip` (primary copy)
+- **ZIP (backup):** `Desktop\AmalgamSites\backups\v0-vir-soccer-real\vir-soccer-v0-export-<timestamp>.zip`
 - **Extracted:** `Desktop\AmalgamSites\backups\v0-vir-soccer-real\extracted-<timestamp>\`
 
-You can open that folder or run `node scripts/apply-v0-zip.mjs` on the ZIP later.
+You can also put your key in one line in `Desktop\v0-api-key.txt` (delete after use), then run `Desktop\GET-V0-ZIP-to-Desktop.cmd`.
